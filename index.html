@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{color-scheme:light; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0; font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Thomas Wu — Data &amp; Forward Deployed Engineer</title>
+<meta name="description" content="Thomas Wu is a data and forward deployed engineer building AI tools, data systems, and production software for real operational workflows.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Thomas Wu — Data &amp; Forward Deployed Engineer">
+<meta property="og:description" content="AI tools, data systems, and production software built for real operational workflows.">
+<meta property="og:image" content="shots/ebus-dashboard.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#eef3f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a1623" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+
+<style>
+/* ======================================================================
+   DESIGN PLAN
+   Layout: a page of engineering "sheets" — each section is a drawing
+   panel with corner tick marks and a sheet number, sitting on a faint
+   blueprint grid. Hero reads like a drawing title block.
+   Color: blueprint navy ground, pale ink linework, one safety-orange
+   accent (the grease-pencil mark an engineer adds by hand on a print).
+   Type: Big Shoulders Display (condensed, stamped title-block headers),
+   IBM Plex Sans (body/technical doc), IBM Plex Mono (labels, data, tags).
+   ====================================================================== */
+:root{
+  --chart-avail:#7f98ad; --bg:#eef3f8; --surface:#ffffff; --line:#c3d2de; --line-strong:#8fa6b8;
+  --fg:#152433; --muted:#5b7186; --accent:#c85a28; --accent-fg:#ffffff;
+  --font-display:'Big Shoulders Display','Arial Narrow',sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --chart-avail:#5f7d99; --bg:#0a1623; --surface:#0f1f30; --line:#223447; --line-strong:#3a5570;
+    --fg:#dfe8f0; --muted:#8aa0b4; --accent:#ff8a4c; --accent-fg:#1a0e06;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --chart-avail:#5f7d99; --bg:#0a1623; --surface:#0f1f30; --line:#223447; --line-strong:#3a5570;
+  --fg:#dfe8f0; --muted:#8aa0b4; --accent:#ff8a4c; --accent-fg:#1a0e06;
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg); font-family:var(--font-body);
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+body::before{
+  content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px);
+  z-index:10; background:var(--surface);
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:800; letter-spacing:.01em; text-wrap:balance; margin:0}
+p{margin:0; line-height:1.65}
+a{color:var(--accent)}
+.wrap{max-width:860px; margin:0 auto}
+.mono{font-family:var(--font-mono)}
+.eyebrow{
+  font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* sticky title strip */
+.topstrip{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:9;
+  background:var(--surface); border-bottom:1px solid var(--line-strong);
+}
+.topstrip-inner{
+  max-width:860px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;
+  padding-block:.7rem; gap:1rem; flex-wrap:wrap;
+}
+.topstrip-name{font-family:var(--font-display); font-weight:700; font-size:1.05rem}
+.topnav{display:flex; gap:1.1rem; font-family:var(--font-mono); font-size:.78rem}
+.topnav a{color:var(--muted); text-decoration:none; border-bottom:1px solid transparent}
+.topnav a:hover, .topnav a:focus-visible{color:var(--fg); border-color:var(--accent)}
+
+/* sheet = a bordered panel with corner ticks and a sheet number */
+.sheet{
+  position:relative; background:var(--surface); border:1px solid var(--line-strong);
+  margin:2.4rem auto; padding:2rem; max-width:860px;
+}
+.sheet::before, .sheet::after,
+.sheet .tick-br, .sheet .tick-bl{
+  content:""; position:absolute; width:14px; height:14px; pointer-events:none;
+}
+.sheet::before{top:-1px; left:-1px; border-top:2px solid var(--accent); border-left:2px solid var(--accent)}
+.sheet::after{top:-1px; right:-1px; border-top:2px solid var(--accent); border-right:2px solid var(--accent)}
+.sheet .tick-bl{bottom:-1px; left:-1px; border-bottom:2px solid var(--accent); border-left:2px solid var(--accent)}
+.sheet .tick-br{bottom:-1px; right:-1px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent)}
+.sheet-head{
+  display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap;
+  border-bottom:1px solid var(--line); padding-bottom:.9rem; margin-bottom:1.4rem;
+}
+.sheet-head h2{font-size:clamp(1.4rem,4vw,1.9rem)}
+.sheet-no{font-family:var(--font-mono); font-size:.72rem; color:var(--muted); white-space:nowrap}
+
+/* hero / title block */
+.hero{padding-block:3rem 1rem}
+.hero h1{font-size:clamp(2.6rem,9vw,4.4rem); line-height:.95}
+.hero .role{font-family:var(--font-mono); color:var(--accent); font-size:1rem; margin-top:.6rem}
+.hero p.lede{max-width:58ch; margin-top:1.2rem; font-size:1.05rem; color:var(--fg)}
+.hero-actions{display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.4rem}
+.hero-actions a{
+  display:inline-flex; align-items:center; gap:.4rem;
+  font-family:var(--font-mono); font-size:.74rem; letter-spacing:.06em; text-transform:uppercase;
+  padding:.65rem 1.05rem; border:1px solid var(--line-strong); color:var(--fg); text-decoration:none;
+  background:var(--surface);
+}
+.hero-actions a:hover{border-color:var(--accent); color:var(--accent)}
+.hero-actions a.primary{background:var(--accent); color:var(--accent-fg); border-color:var(--accent)}
+.hero-actions a.primary:hover{opacity:.88; color:var(--accent-fg)}
+.titleblock{
+  margin-top:2rem; border:1px solid var(--line-strong); width:fit-content; max-width:100%;
+}
+.titleblock div{padding:.6rem .8rem}
+.titleblock div + div{border-top:1px solid var(--line)}
+.titleblock .k{display:block; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+.titleblock .v{display:block; font-family:var(--font-mono); font-size:.86rem; margin-top:.2rem}
+
+/* about */
+.about p{max-width:64ch}
+
+/* project / case-study text */
+.kicker{font-family:var(--font-mono); font-size:.78rem; color:var(--accent); letter-spacing:.06em}
+.project-title{font-size:clamp(1.5rem,4.2vw,1.9rem); margin-top:.3rem}
+.project-sub{color:var(--muted); margin-top:.5rem; max-width:62ch}
+
+.block-title{
+  font-family:var(--font-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted); margin:1.6rem 0 .7rem; display:flex; align-items:center; gap:.6rem;
+}
+.block-title::after{content:""; height:1px; background:var(--line); flex:1}
+
+/* case-study sub-block (grading pipeline / classbot live inside one sheet) */
+.subcase{padding-top:2rem; margin-top:2rem; border-top:2px solid var(--line); scroll-margin-top:7rem}
+.subcase:first-of-type{padding-top:0; margin-top:1.6rem; border-top:none}
+.subcase-head{display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap}
+.role-tag{
+  font-family:var(--font-mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
+  border:1px solid var(--accent); color:var(--accent); padding:.2rem .5rem; white-space:nowrap;
+}
+
+/* diagram */
+.diagram-frame{border:1px dashed var(--line-strong); padding:1rem; overflow-x:auto}
+.diagram-frame svg{display:block; min-width:560px; width:100%; height:auto}
+.bp-box{fill:var(--surface); stroke:var(--line-strong); stroke-width:1.4}
+.bp-box-accent{fill:var(--surface); stroke:var(--accent); stroke-width:1.6}
+.bp-line{stroke:var(--line-strong); stroke-width:1.3; fill:none}
+.bp-line-accent{stroke:var(--accent); stroke-width:1.5; fill:none}
+.bp-text{font-family:var(--font-mono); fill:var(--fg); font-size:11px}
+.bp-text-muted{font-family:var(--font-mono); fill:var(--muted); font-size:9.5px}
+
+/* governance list */
+.gov-list{display:grid; gap:.9rem; margin-top:.4rem}
+.gov-item{display:grid; grid-template-columns:auto 1fr; gap:.9rem; align-items:start}
+.gov-tag{
+  font-family:var(--font-mono); font-size:.66rem; color:var(--accent-fg); background:var(--accent);
+  padding:.18rem .45rem; white-space:nowrap; align-self:start; margin-top:.15rem;
+}
+.gov-item p{color:var(--fg)}
+.gov-item .label{font-weight:600; display:block; margin-bottom:.15rem}
+
+/* contributions */
+ul.plain{list-style:none; padding:0; margin:0; display:grid; gap:.7rem}
+ul.plain li{padding-left:1.1rem; position:relative; color:var(--fg)}
+ul.plain li::before{content:"—"; position:absolute; left:0; color:var(--accent)}
+
+/* screenshots */
+.shots{display:grid; gap:1rem; margin-top:.4rem}
+@media(min-width:620px){.shots{grid-template-columns:1fr 1fr}}
+.shots.single{grid-template-columns:1fr; max-width:420px}
+.shot-fig{margin:0; border:1px solid var(--line-strong); background:var(--surface); min-width:0}
+.shot-fig img{display:block; width:100%; height:auto; border-bottom:1px solid var(--line)}
+.shot-fig figcaption{padding:.6rem .8rem; font-family:var(--font-mono); font-size:.76rem; color:var(--muted)}
+
+/* stack tags */
+.tagrow{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem}
+.tag{
+  font-family:var(--font-mono); font-size:.76rem; border:1px solid var(--line-strong);
+  padding:.3rem .6rem; color:var(--fg);
+}
+
+/* other projects */
+.projgrid{display:grid; gap:1.1rem; margin-top:.4rem}
+@media(min-width:620px){.projgrid{grid-template-columns:1fr 1fr}}
+@media(min-width:860px){.projgrid{grid-template-columns:1fr 1fr 1fr}}
+.projcard{
+  border:1px solid var(--line-strong); padding:1.1rem; display:flex; flex-direction:column; gap:.55rem; min-width:0;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.project-media{
+  min-height:112px; border:1px solid var(--line); margin:-.25rem -.25rem .35rem; overflow:hidden;
+  background:var(--bg); display:grid; place-items:center; position:relative;
+}
+.project-media img{width:100%; height:112px; object-fit:cover; border:0; display:block; transition:transform .28s ease,filter .28s ease}
+.project-media::after{
+  content:""; position:absolute; inset:-20% auto -20% -30%; width:18%; pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(200,90,40,.18),transparent); transform:skewX(-12deg);
+  opacity:0;
+}
+.project-media.grading img{object-position:50% 19%}
+.project-media.ebus img{object-position:50% 18%}
+.agent-map{display:flex; align-items:center; justify-content:center; gap:.12rem; width:100%; padding:1.1rem .25rem}
+.agent-node{width:22px; height:22px; border:1px solid var(--line-strong); display:grid; place-items:center; font:500 .58rem var(--font-mono); background:var(--surface); flex:0 0 auto}
+.agent-node.accent{border-color:var(--accent); color:var(--accent)}
+.agent-arrow{color:var(--muted); font:500 .6rem var(--font-mono)}
+.evidence-row{display:flex; flex-wrap:wrap; gap:.4rem; margin:.15rem 0}
+.evidence{font:500 .68rem var(--font-mono); color:var(--accent); border-left:2px solid var(--accent); padding:.16rem .42rem; background:var(--bg)}
+.projcard .pkicker{font-family:var(--font-mono); font-size:.66rem; color:var(--accent); letter-spacing:.08em}
+.projcard h4{font-family:var(--font-display); font-size:1.2rem; font-weight:700; line-height:1.05}
+.projcard .pdesc{color:var(--fg); font-size:.86rem; line-height:1.55}
+.projcard .tagrow{margin-top:.1rem}
+.projcard .tagrow .tag{font-size:.66rem; padding:.2rem .45rem}
+.projcard .plinks{display:flex; gap:1rem; font-family:var(--font-mono); font-size:.72rem; margin-top:.3rem}
+.projcard .plinks a{text-decoration:none; border-bottom:1px solid var(--line-strong); transition:transform .18s ease,border-color .18s ease,color .18s ease}
+.projcard .plinks a:hover, .projcard .plinks a:focus-visible{border-color:var(--accent); color:var(--accent)}
+.projcard:hover,.projcard:focus-within{transform:translateY(-4px); border-color:var(--accent); box-shadow:4px 4px 0 var(--line)}
+.projcard:hover .project-media img,.projcard:focus-within .project-media img{transform:scale(1.025); filter:saturate(1.06)}
+.projcard:hover .plinks a,.projcard:focus-within .plinks a{transform:translateX(3px)}
+.pshots{display:flex; flex-direction:column; gap:.5rem; margin-top:.1rem}
+.pshots img{display:block; width:100%; height:auto; border:1px solid var(--line-strong); background:var(--surface); cursor:zoom-in}
+.pshots .pshot-cap{font-family:var(--font-mono); font-size:.66rem; color:var(--muted); margin-top:-.3rem}
+
+/* skills */
+.skill-groups{display:grid; gap:1.4rem}
+.skill-group .block-title{margin-top:0}
+
+/* contact */
+.contact-row{
+  display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  border:1px solid var(--line); padding:.9rem 1rem; margin-top:.7rem;
+}
+.contact-row .k{font-family:var(--font-mono); font-size:.68rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; display:block}
+.contact-row .v{font-family:var(--font-mono); font-size:.92rem; margin-top:.15rem; word-break:break-all}
+.copybtn{
+  font-family:var(--font-mono); font-size:.72rem; border:1px solid var(--line-strong); background:transparent;
+  color:var(--fg); padding:.4rem .7rem; cursor:pointer; white-space:nowrap;
+}
+.copybtn:hover, .copybtn:focus-visible{border-color:var(--accent); color:var(--accent)}
+.copybtn[data-done="1"]{border-color:var(--accent); color:var(--accent)}
+
+footer{
+  max-width:860px; margin:0 auto; padding-block:2.5rem 3rem; text-align:center;
+  font-family:var(--font-mono); font-size:.72rem; color:var(--muted);
+}
+
+/* Full case studies stay available without making the homepage 9,000px longer. */
+.case-study-details{max-width:860px; margin:2.4rem auto}
+.case-study-details > summary{
+  list-style:none; cursor:pointer; background:var(--surface); border:1px solid var(--line-strong);
+  padding:1.15rem 1.3rem; display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  font-family:var(--font-mono); color:var(--fg);
+}
+.case-study-details > summary::-webkit-details-marker{display:none}
+.case-study-details > summary::after{content:"OPEN +"; color:var(--accent); font-size:.72rem; white-space:nowrap}
+.case-study-details[open] > summary::after{content:"CLOSE −"}
+.case-study-details > summary:hover,.case-study-details > summary:focus-visible{border-color:var(--accent)}
+.case-summary-title{font-family:var(--font-display); font-weight:800; font-size:1.45rem; display:block}
+.case-summary-sub{font-size:.72rem; color:var(--muted); display:block; margin-top:.2rem}
+.case-study-details > .sheet{margin:1rem auto 2.4rem}
+
+@media (prefers-reduced-motion: no-preference){
+  .hero > *{animation:hero-enter .48s cubic-bezier(.2,.7,.2,1) both}
+  .hero > :nth-child(1){animation-delay:.04s}
+  .hero > :nth-child(2){animation-delay:.11s}
+  .hero > :nth-child(3){animation-delay:.2s}
+  .hero > :nth-child(4){animation-delay:.29s}
+  .hero > :nth-child(5){animation-delay:.38s}
+  .hero > :nth-child(6){animation:blueprint-draw .7s cubic-bezier(.2,.7,.2,1) .48s both}
+
+  .projcard.is-reveal-pending{opacity:0; transform:translateY(16px)}
+  .projcard.is-visible{animation:card-enter .52s cubic-bezier(.2,.7,.2,1) both; animation-delay:var(--reveal-delay,0ms)}
+  .projcard.is-visible .project-media::after{animation:scan-line .8s ease-out calc(var(--reveal-delay,0ms) + .2s) both}
+  .projcard.is-visible .agent-node{animation:agent-boot .34s ease-out both}
+  .projcard.is-visible .agent-node:nth-child(1){animation-delay:calc(var(--reveal-delay,0ms) + .15s)}
+  .projcard.is-visible .agent-node:nth-child(3){animation-delay:calc(var(--reveal-delay,0ms) + .25s)}
+  .projcard.is-visible .agent-node:nth-child(5){animation-delay:calc(var(--reveal-delay,0ms) + .35s)}
+  .projcard.is-visible .agent-node:nth-child(7){animation-delay:calc(var(--reveal-delay,0ms) + .45s)}
+  .projcard.is-visible .agent-node:nth-child(9){animation-delay:calc(var(--reveal-delay,0ms) + .55s)}
+  .projcard.is-visible .agent-node:nth-child(11){animation-delay:calc(var(--reveal-delay,0ms) + .65s)}
+  .case-study-details[open] > .sheet{animation:case-open .32s ease-out both}
+
+  @keyframes hero-enter{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+  @keyframes blueprint-draw{from{opacity:0; clip-path:inset(0 100% 0 0)} to{opacity:1; clip-path:inset(0 0 0 0)}}
+  @keyframes card-enter{from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none}}
+  @keyframes scan-line{0%{opacity:0; left:-30%} 25%{opacity:1} 100%{opacity:0; left:120%}}
+  @keyframes agent-boot{0%{opacity:.35; transform:scale(.82)} 70%{border-color:var(--accent); color:var(--accent); transform:scale(1.08)} 100%{opacity:1; transform:scale(1)}}
+  @keyframes case-open{from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:none}}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .projcard,.project-media img,.projcard .plinks a{transition:none}
+}
+
+/* EBus case study: spec list, figures, charts */
+.team-note{color:var(--muted); margin-top:.8rem; max-width:64ch}
+ul.plain .label{font-weight:600}
+.spec{margin:0; border:1px solid var(--line); display:grid}
+.spec > div{display:grid; grid-template-columns:6.5rem minmax(0,1fr); gap:.8rem; padding:.65rem .8rem; border-top:1px solid var(--line)}
+.spec > div:first-child{border-top:none}
+.spec dt{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding-top:.15rem}
+.spec dd{margin:0; line-height:1.55; min-width:0}
+.figs{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); border:1px solid var(--line-strong)}
+.figs > div{padding:.8rem; border:1px solid var(--line); margin:-.5px; min-width:0}
+.fig-v{display:block; font-family:var(--font-display); font-weight:800; font-size:1.9rem; line-height:1.05; font-variant-numeric:tabular-nums}
+.fig-k{display:block; font-size:.8rem; line-height:1.45; color:var(--muted); margin-top:.3rem}
+.chart-title{font-size:1.25rem; font-weight:700; margin-top:1.8rem}
+.chart-sub{color:var(--muted); font-size:.88rem; margin-top:.35rem; max-width:66ch}
+.chart-legend{display:flex; flex-wrap:wrap; gap:.4rem 1.2rem; margin:.8rem 0 .5rem; font-family:var(--font-mono); font-size:.72rem; color:var(--fg)}
+.chart-legend span{display:inline-flex; align-items:center; gap:.4rem}
+.swatch{display:inline-block; width:10px; height:10px; border-radius:2px}
+.swatch-avail, .bar-avail{background:var(--chart-avail); fill:var(--chart-avail)}
+.swatch-sched, .bar-sched{background:var(--accent); fill:var(--accent)}
+.chart-frame{margin-top:.6rem}
+.band-peak{fill:var(--accent); fill-opacity:.1}
+.chart-grid{stroke:var(--line); stroke-width:1}
+.chart-line{fill:none; stroke:var(--accent); stroke-width:2}
+.chart-dot{fill:var(--accent); stroke:var(--surface); stroke-width:2}
+.hit{fill:transparent; cursor:crosshair; outline:none}
+rect.hit:hover, rect.hit:focus-visible{fill:var(--fg); fill-opacity:.07}
+circle.hit:hover, circle.hit:focus-visible{fill:var(--accent); fill-opacity:.2}
+#chart-tip{position:fixed; z-index:20; pointer-events:none; background:var(--fg); color:var(--bg); font-family:var(--font-mono); font-size:.72rem; padding:.35rem .55rem; max-width:260px; line-height:1.4}
+.data-view{margin-top:.5rem; font-size:.84rem}
+.data-view summary{font-family:var(--font-mono); font-size:.72rem; color:var(--muted); cursor:pointer}
+.data-view summary:hover, .data-view summary:focus-visible{color:var(--accent)}
+.table-wrap{overflow-x:auto; margin-top:.5rem}
+.data-view table{border-collapse:collapse; font-family:var(--font-mono); font-size:.74rem; font-variant-numeric:tabular-nums; min-width:320px}
+.data-view th, .data-view td{border-bottom:1px solid var(--line); padding:.25rem 1.1rem .25rem 0; text-align:left}
+.data-view th{color:var(--muted); font-weight:500}
+.board-fig{max-width:420px; margin-top:1.8rem}
+.stage-line{margin-top:1.1rem}
+
+@media(max-width:619px){
+  .topstrip-inner{display:block; padding-block:.65rem .45rem; overflow:hidden}
+  .topnav{margin-top:.45rem; max-width:100%; flex-wrap:wrap; gap:.45rem 1rem; padding-bottom:.25rem; white-space:normal}
+  .hero{padding-top:2.25rem}
+  .sheet{padding:1.25rem}
+  .case-study-details > summary{margin-inline:0}
+  .project-media,.project-media img{height:138px}
+  .project-media{min-height:138px}
+}
+</style>
+</head>
+<body>
+<div class="topstrip">
+  <div class="topstrip-inner wrap">
+    <span class="topstrip-name">Thomas Wu</span>
+    <nav class="topnav">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#case-studies-full">Case Studies</a>
+      <a href="#side-projects">Side Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <p class="eyebrow">Portfolio — Data &amp; Forward Deployed Engineering</p>
+  <h1>Thomas&nbsp;Wu</h1>
+  <p class="role">I turn messy operational workflows into reliable data and AI systems.</p>
+  <p class="lede">I work directly with stakeholders, translate their requirements into software, and carry systems from prototype through evaluation and deployment. My work spans procurement automation at Otsuka, AI-assisted grading at Cornell, and electric-bus fleet operations.</p>
+  <div class="hero-actions">
+    <a class="primary" href="resume/Thomas_Wu_Resume_FDE_Engineer.pdf" target="_blank" rel="noopener">Résumé ↗</a>
+    <a href="#projects">View projects ↓</a>
+    <a href="https://github.com/Thomaswu32?tab=repositories" target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="https://www.linkedin.com/in/chenghaothomaswu/" target="_blank" rel="noopener">LinkedIn ↗</a>
+  </div>
+  <div class="titleblock">
+    <div><span class="k">Open to</span><span class="v">Data Engineer · Forward Deployed Engineer</span></div>
+    <div><span class="k">Location</span><span class="v">San Jose, California · Open to relocation</span></div>
+    <div><span class="k">Education</span><span class="v">M.S. Systems Engineering, Cornell University, 2026</span><span class="v">B.S. Business &amp; Finance + Information Science, University of Shanghai for Science and Technology, 2023</span></div>
+  </div>
+</header>
+
+<section class="sheet" id="about">
+  <span class="tick-bl"></span><span class="tick-br"></span>
+  <div class="sheet-head">
+    <h2>About</h2>
+    <span class="sheet-no mono">SHEET 01 — PROFILE</span>
+  </div>
+  <div class="about">
+    <p>I work across AI engineering, data systems, and user-facing software. My projects involve understanding how people work, translating their needs into technical requirements, and iterating through demos and testing. I care about making systems useful in practice — including how they handle exceptions, recover from failures, and support human judgment.</p>
+  </div>
+</section>
+
+<section class="sheet" id="projects">
+  <span class="tick-bl"></span><span class="tick-br"></span>
+  <div class="sheet-head">
+    <h2>Projects</h2>
+    <span class="sheet-no mono">SHEET 02 — PROJECT INDEX</span>
+  </div>
+  <p class="project-sub">Three systems built for real stakeholders — procurement, grading, and fleet operations.</p>
+
+  <div class="projgrid">
+    <div class="projcard">
+      <div class="project-media" aria-hidden="true">
+        <div class="agent-map"><span class="agent-node accent">01</span><span class="agent-arrow">→</span><span class="agent-node">02</span><span class="agent-arrow">→</span><span class="agent-node">03</span><span class="agent-arrow">→</span><span class="agent-node">04</span><span class="agent-arrow">→</span><span class="agent-node">05</span><span class="agent-arrow">→</span><span class="agent-node accent">06</span></div>
+      </div>
+      <span class="pkicker">01 / ENTERPRISE AI</span>
+      <h4>Procurement AI — Otsuka</h4>
+      <p class="pdesc">Built a six-agent purchase-requisition MVP in eight weeks, working with procurement stakeholders through three demos to refine requirements and handle exceptions.</p>
+      <div class="evidence-row"><span class="evidence">8-week build</span><span class="evidence">3 stakeholder demos</span><span class="evidence">~90% test accuracy</span></div>
+      <div class="tagrow">
+        <span class="tag">Enterprise AI</span><span class="tag">Agent Workflows</span><span class="tag">Human Review</span>
+      </div>
+      <div class="plinks"><a href="#otsuka">View case study ↓</a></div>
+    </div>
+
+    <div class="projcard">
+      <div class="project-media grading"><img src="shots/grading-agent.webp" alt="AI grading agent console calling course tools" width="1800" height="975" loading="lazy"></div>
+      <span class="pkicker">02 / RAG &amp; EVALUATION</span>
+      <h4>AI Grading — Cornell</h4>
+      <p class="pdesc">Built a RAG-based grading assistant for a 200-student course, with evaluation against human graders, review paths for edge cases, and controls for LLM usage and cost.</p>
+      <div class="evidence-row"><span class="evidence">2,000-submission evaluation</span><span class="evidence">99% human agreement</span><span class="evidence">In active use</span></div>
+      <div class="tagrow">
+        <span class="tag">RAG</span><span class="tag">Evaluation</span><span class="tag">LLM Infrastructure</span>
+      </div>
+      <div class="plinks"><a href="#grading">View case study ↓</a></div>
+    </div>
+
+    <div class="projcard">
+      <div class="project-media ebus"><img src="shots/ebus-dashboard.jpg" alt="OptiBus fleet charging dashboard" width="612" height="435" loading="lazy"></div>
+      <span class="pkicker">03 / FLEET OPERATIONS</span>
+      <h4>Electric-Bus Operations — Cornell CTECH</h4>
+      <p class="pdesc">Technical manager on a Cornell MEng team building OptiBus, which schedules bus charging and sizes station capacity. Primary liaison with TCAT; presented to its Board, leading to an approved pilot.</p>
+      <div class="evidence-row"><span class="evidence">41-bus base dataset</span><span class="evidence">TCAT Board presentation</span><span class="evidence">Pilot approved</span></div>
+      <div class="tagrow">
+        <span class="tag">Full-Stack Engineering</span><span class="tag">Optimization</span><span class="tag">Stakeholder Delivery</span>
+      </div>
+      <div class="plinks"><a href="#ebus">View case study ↓</a></div>
+    </div>
+  </div>
+</section>
+
+<details class="case-study-details" id="case-studies-full">
+  <summary><span><span class="case-summary-title">Full Case Studies</span><span class="case-summary-sub">Engineering decisions, architecture, evidence, and limitations</span></span></summary>
+<section class="sheet" id="work">
+  <span class="tick-bl"></span><span class="tick-br"></span>
+  <div class="sheet-head">
+    <h2>Case Studies</h2>
+    <span class="sheet-no mono">SHEET 03 — PROJECT DETAIL</span>
+  </div>
+  <p class="project-sub">How each system above actually works, what I was responsible for, and where it stands today.</p>
+
+  <div class="subcase" id="otsuka">
+    <div class="subcase-head">
+      <div>
+        <p class="kicker">01 / PROCUREMENT AI</p>
+        <h3 class="project-title">A six-agent MVP for purchase-requisition review at Otsuka</h3>
+      </div>
+      <span class="role-tag">MVP</span>
+    </div>
+    <p class="project-sub">Built solo over an eight-week internship, working directly with Otsuka's procurement team.</p>
+
+    <div class="block-title">The Problem</div>
+    <p>Otsuka's procurement team reviewed purchase requisitions by hand — checking each one against policy, routing exceptions, and chasing down edge cases like requisitions left pending by employees who had already left the company.</p>
+
+    <div class="block-title">My Role</div>
+    <p>I was the sole engineer on this MVP. I designed and built the agent workflow, and ran three stakeholder demos with the procurement team to refine it against how they actually worked.</p>
+
+    <div class="block-title">How It Works</div>
+    <p>Requisitions move through a six-agent workflow that checks them against policy and flags exceptions. Anything flagged, anything that fails validation, or anything the system isn't confident about is routed to a human reviewer rather than auto-approved.</p>
+
+    <div class="block-title">A Key Decision</div>
+    <p>Across three stakeholder demos, I revised the workflow based on operational edge cases, including pending requisitions from departed employees. Flagged requests, failed validations, and low-confidence outputs were routed to human reviewers, and their corrections informed the test set.</p>
+
+    <div class="block-title">Results &amp; Evidence</div>
+    <p>Delivered as a working MVP in eight weeks, revised across three demo rounds with procurement stakeholders. <strong>Stage: MVP — not in production.</strong></p>
+
+    <div class="block-title">Stack</div>
+    <div class="tagrow">
+      <span class="tag">Claude Code</span>
+      <span class="tag">Multi-agent orchestration</span>
+      <span class="tag">Human-in-the-loop review</span>
+    </div>
+  </div>
+
+  <div class="subcase" id="grading">
+    <div class="subcase-head">
+      <div>
+        <p class="kicker">02 / AI GRADING</p>
+        <h3 class="project-title">A RAG-based grading assistant for a 200-student Cornell course</h3>
+      </div>
+      <span class="role-tag">In Production</span>
+    </div>
+    <p class="project-sub">Course content and rubrics live in a private instructor repository, so this describes the architecture and what I built rather than a code sample.</p>
+
+    <div class="block-title">The Problem</div>
+    <p>Course staff graded every submission by hand across a ~200-student engineering course — reading each one against a shared rubric. That doesn't scale, and consistency across multiple graders is hard to hold by eye.</p>
+
+    <div class="block-title">My Role</div>
+    <p>I built the retrieval layer that pulls course material and rubric content into grading context, the LLM gateway that enforces concurrency, token, and cost limits on every model call, and the evaluation harness that benchmarks AI output against human-graded submissions. The same course also runs a separate retrieval-based tutor — built on Google NotebookLM — that I built and ship to students directly; that's a different system from the grading pipeline described here.</p>
+
+    <div class="block-title">How It Works</div>
+    <p>A submission comes in, the pipeline retrieves the relevant rubric and course material and assembles it into a grading prompt, and the model drafts a score and comment — or flags the submission <code class="mono">needs_human</code> rather than guessing. Every AI-touched grade posts to the gradebook hidden from the student until a human explicitly releases it.</p>
+    <div class="diagram-frame">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Architecture diagram: student submission flows through a permissions broker to a RAG-based AI grading pipeline, which writes a hidden grade back through the broker until a human releases it.">
+        <rect class="bp-box" x="248" y="6" width="144" height="34"/>
+        <text class="bp-text" x="320" y="27" text-anchor="middle">STUDENT SUBMISSION</text>
+
+        <path class="bp-line" d="M320 40 V66" marker-end="url(#arrow)"/>
+
+        <rect class="bp-box-accent" x="190" y="68" width="260" height="62"/>
+        <text class="bp-text" x="320" y="90" text-anchor="middle">PERMISSIONS BROKER</text>
+        <text class="bp-text-muted" x="320" y="106" text-anchor="middle">only holder of the LMS credential</text>
+        <text class="bp-text-muted" x="320" y="120" text-anchor="middle">alias-only IDs · writes default dry-run</text>
+
+        <path class="bp-line" d="M320 130 V156" marker-end="url(#arrow)"/>
+        <text class="bp-text-muted" x="336" y="148" text-anchor="start">scoped key</text>
+
+        <rect class="bp-box" x="170" y="158" width="300" height="76"/>
+        <text class="bp-text" x="320" y="180" text-anchor="middle">AI GRADING PIPELINE</text>
+        <text class="bp-text-muted" x="320" y="196" text-anchor="middle">retrieves rubric + course material, assembles prompt</text>
+        <text class="bp-text-muted" x="320" y="210" text-anchor="middle">emits score + comment — or NEEDS_HUMAN</text>
+        <text class="bp-text-muted" x="320" y="224" text-anchor="middle">never a numeric guess</text>
+
+        <path class="bp-line" d="M320 234 V260" marker-end="url(#arrow)"/>
+        <text class="bp-text-muted" x="336" y="252" text-anchor="start">writes back through broker</text>
+
+        <rect class="bp-box" x="150" y="262" width="340" height="34"/>
+        <text class="bp-text" x="320" y="283" text-anchor="middle">GRADEBOOK — hidden until a human releases it</text>
+
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="var(--line-strong)"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="block-title">A Key Decision</div>
+    <p>Evaluation runs against real historical submissions could fail partway through — and a naive restart would re-call the model on work it had already paid for. I built the eval harness to be resumable and idempotent: each graded submission is checkpointed, so a restart picks up where it left off instead of duplicating spend. The LLM gateway separately enforces concurrency caps, token-rate throttling, and a hard spend ceiling that fails closed rather than silently overspending.</p>
+
+    <div class="block-title">Results &amp; Evidence</div>
+    <p>AI-drafted grades are benchmarked against human-graded submissions before anything reaches a student, and submissions the model isn't confident on are routed to a human reviewer instead of being scored automatically. <strong>Stage: in active use grading real coursework, with every grade human-released.</strong></p>
+    <div class="shots single">
+      <figure class="shot-fig">
+        <img src="shots/grading-agent.webp" alt="Teaching agent console showing the grading pipeline calling Canvas tools (canvas_grades_bulk) against the live course gradebook." width="1800" height="975" loading="lazy">
+        <figcaption>Teaching agent console — the grading pipeline calling Canvas tools directly</figcaption>
+      </figure>
+    </div>
+
+    <div class="block-title">Stack</div>
+    <div class="tagrow">
+      <span class="tag">Python</span>
+      <span class="tag">R</span>
+      <span class="tag">FastAPI</span>
+      <span class="tag">pgvector</span>
+      <span class="tag">LLM gateway integration</span>
+      <span class="tag">YAML config</span>
+      <span class="tag">CI governance checks</span>
+    </div>
+  </div>
+
+  <div class="subcase" id="ebus">
+    <div class="subcase-head">
+      <div>
+        <p class="kicker">03 / ELECTRIC-BUS OPERATIONS</p>
+        <h3 class="project-title">OptiBus: charging schedules for electric-bus fleets, developed with TCAT</h3>
+      </div>
+      <span class="role-tag">Approved Pilot</span>
+    </div>
+    <p class="project-sub">A Cornell MEng team project. I was technical manager and the primary technical liaison with TCAT and BC Transit.</p>
+
+    <div class="block-title">The Problem</div>
+    <p>A transit agency moving to battery-electric buses has to decide when each bus charges, how much charging capacity each stop needs, and how to keep every bus inside safe battery limits while it runs its trips. Optimization models for this exist in the research literature, but dispatchers had no tool they could use day to day. Most agencies still rely on manual or rule-of-thumb scheduling, which gets harder with every bus added.</p>
+
+    <div class="block-title">My Role</div>
+    <ul class="plain">
+      <li>Primary technical liaison with TCAT and BC Transit. Requirements came from open-ended conversations with dispatchers about a workflow I hadn't worked in before, and I turned them into concrete, buildable features.</li>
+      <li>Led product definition: PRDs, user stories, acceptance criteria, and Axure prototypes tested with the agencies and revised on their feedback.</li>
+      <li>Built Django REST services backed by PostgreSQL.</li>
+      <li>Presented the system to the TCAT Board.</li>
+    </ul>
+    <p class="team-note">The optimization model and dashboard were built by the wider MEng team, advised by Zhaoyao Bao, Xinlai Liu, and Oliver Gao.</p>
+
+    <div class="block-title">How It Works</div>
+    <p>A planner uploads a vehicle plan listing each bus's charging windows and the distance it drives between them, then sets the battery limits. A mixed-integer model, solved with Gurobi, decides minute by minute which buses charge. The results load into a dashboard that dispatchers can read without knowing anything about the model.</p>
+    <div class="diagram-frame">
+      <svg viewBox="0 0 640 196" role="img" aria-label="Workflow: transit data goes through the Django API into a Gurobi optimization model. Its results are stored in PostgreSQL and shown in the React dashboard. Dispatcher review feeds new requirements back into the input data."><defs><marker id="ebus-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--line-strong)"/></marker><marker id="ebus-arrow-accent" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" style="fill:var(--accent)"/></marker></defs><rect class="bp-box" x="10" y="6" width="180" height="66"/><text class="bp-text" x="100" y="26" text-anchor="middle">TRANSIT DATA</text><text class="bp-text-muted" x="100" y="43" text-anchor="middle">vehicle plan (.xlsx)</text><text class="bp-text-muted" x="100" y="56" text-anchor="middle">GTFS routes and stops</text><rect class="bp-box" x="230" y="6" width="180" height="66"/><text class="bp-text" x="320" y="26" text-anchor="middle">DJANGO REST API</text><text class="bp-text-muted" x="320" y="43" text-anchor="middle">upload, settings,</text><text class="bp-text-muted" x="320" y="56" text-anchor="middle">run and sync endpoints</text><rect class="bp-box-accent" x="450" y="6" width="180" height="66"/><text class="bp-text" x="540" y="26" text-anchor="middle">GUROBI MILP</text><text class="bp-text-muted" x="540" y="43" text-anchor="middle">energy cost + capacity</text><text class="bp-text-muted" x="540" y="56" text-anchor="middle">SOC limits per bus</text><rect class="bp-box" x="450" y="124" width="180" height="66"/><text class="bp-text" x="540" y="144" text-anchor="middle">SOLVER OUTPUT</text><text class="bp-text-muted" x="540" y="161" text-anchor="middle">x: minute plan per bus</text><text class="bp-text-muted" x="540" y="174" text-anchor="middle">y: capacity per station</text><rect class="bp-box" x="230" y="124" width="180" height="66"/><text class="bp-text" x="320" y="144" text-anchor="middle">POSTGRESQL</text><text class="bp-text-muted" x="320" y="161" text-anchor="middle">schedules, windows,</text><text class="bp-text-muted" x="320" y="174" text-anchor="middle">system settings</text><rect class="bp-box" x="10" y="124" width="180" height="66"/><text class="bp-text" x="100" y="144" text-anchor="middle">REACT DASHBOARD</text><text class="bp-text-muted" x="100" y="161" text-anchor="middle">map, schedule, battery,</text><text class="bp-text-muted" x="100" y="174" text-anchor="middle">charged energy, load</text><path class="bp-line" d="M190 39 H226" marker-end="url(#ebus-arrow)"/><path class="bp-line" d="M410 39 H446" marker-end="url(#ebus-arrow)"/><path class="bp-line" d="M540 72 V120" marker-end="url(#ebus-arrow)"/><path class="bp-line" d="M450 157 H414" marker-end="url(#ebus-arrow)"/><path class="bp-line" d="M230 157 H194" marker-end="url(#ebus-arrow)"/><path class="bp-line-accent" stroke-dasharray="5 4" d="M100 124 V76" marker-end="url(#ebus-arrow-accent)"/><text class="bp-text-muted" x="110" y="102">dispatcher review, new requirements</text></svg>
+    </div>
+
+    <div class="block-title">The Model</div>
+    <dl class="spec">
+      <div><dt>Decides</dt><dd>Whether each bus charges in each time slot of each window, and the peak charging capacity to provide at each stop.</dd></div>
+      <div><dt>Minimizes</dt><dd>Time-of-use energy cost, plus a weighted cost for the capacity provided across all stops.</dd></div>
+      <div><dt>Battery</dt><dd>State of charge starts each day at 80%, is tracked through every charge and trip, and stays between 20% and 80%.</dd></div>
+      <div><dt>Stations</dt><dd>Total charging load at a stop can't exceed its capacity in any minute of the day.</dd></div>
+      <div><dt>Basis</dt><dd>Builds on published charging-scheduling research, including Bao et al. (2023). Limits and slot length are adjustable in the dashboard.</dd></div>
+    </dl>
+
+    <div class="block-title">What Dispatchers See</div>
+    <div class="shots">
+      <figure class="shot-fig">
+        <img src="shots/ebus-dashboard.jpg" alt="OptiBus dashboard with a navigation sidebar, a map of TCAT routes and charging stops, and a schedule overview listing charging sessions and average battery level per bus." width="612" height="435" loading="lazy">
+        <figcaption>OptiBus dashboard: routes, charging stops, and schedule overview</figcaption>
+      </figure>
+      <figure class="shot-fig">
+        <img src="shots/ebus-schedule.jpg" alt="Charging timeline with one row per bus. Blue blocks mark charging windows and green blocks mark scheduled charging." width="1400" height="994" loading="lazy">
+        <figcaption>Charging timeline, earlier interface: windows and scheduled charging by bus</figcaption>
+      </figure>
+      <figure class="shot-fig">
+        <img src="shots/ebus-soc.jpg" alt="Optimization results page with download buttons and line charts of state of charge over the day for groups of buses." width="1400" height="735" loading="lazy">
+        <figcaption>Model run, earlier interface: result files and battery level by bus</figcaption>
+      </figure>
+      <figure class="shot-fig">
+        <img src="shots/ebus-station-load.jpg" alt="Heatmap with one row per charging station and one column per hour, shaded by the number of buses charging." width="1400" height="728" loading="lazy">
+        <figcaption>Station load, earlier interface: charging activity by stop and hour</figcaption>
+      </figure>
+    </div>
+
+    <div class="block-title">A Key Decision</div>
+    <p>We made charging capacity an output of the model. Treating it as a fixed input would have answered only the dispatcher's question of when each bus charges. Solving for it in the same run also answers the planner's question of where charging capacity is needed. The project's original target was New York's MTA, which plans to electrify about 5,800 buses by 2040. MTA operating data wasn't available, so we built and tested on TCAT's real schedule instead, a change that also gave us dispatchers to work with directly.</p>
+
+    <div class="block-title">Results &amp; Evidence</div>
+    <div class="figs">
+      <div><span class="fig-v">5 of 18</span><span class="fig-k">candidate stops get capacity, with one bus charging at a time at each</span></div>
+      <div><span class="fig-v">1.8%</span><span class="fig-k">of scheduled charging falls at peak tariff, against 37.5% of available window time</span></div>
+      <div><span class="fig-v">20.3%</span><span class="fig-k">lowest battery level in the run, above the 20% floor</span></div>
+      <div><span class="fig-v">34.3 s</span><span class="fig-k">to return results for an expanded 2,050-bus test file</span></div>
+    </div>
+
+    <h4 class="chart-title">Charging moves out of the peak tariff periods</h4>
+    <p class="chart-sub">Latest committed model run on TCAT's schedule: 41 buses, 424 charging windows. The model used 168 of 3,437 available window minutes, across 9 buses.</p>
+    <div class="chart-legend"><span><i class="swatch swatch-avail"></i>Charging-window minutes available</span><span><i class="swatch swatch-sched"></i>Minutes scheduled to charge</span></div>
+    <div class="diagram-frame chart-frame">
+      <svg viewBox="0 0 640 250" role="img" aria-label="Charging minutes per hour. Scheduled charging clusters between 11:00 and 18:00 and is almost absent in the 8 to 11 and 18 to 21 peak tariff periods, although many charging-window minutes are available then."><rect class="band-peak" x="161.2" y="30" width="87.9" height="184"/><text class="bp-text-muted" x="205.1" y="22" text-anchor="middle">PEAK TARIFF</text><rect class="band-peak" x="454.2" y="30" width="87.9" height="184"/><text class="bp-text-muted" x="498.1" y="22" text-anchor="middle">PEAK TARIFF</text><line class="chart-grid" x1="44" x2="630" y1="214.0" y2="214.0"/><text class="bp-text-muted" x="38" y="217.0" text-anchor="end">0</text><line class="chart-grid" x1="44" x2="630" y1="168.0" y2="168.0"/><text class="bp-text-muted" x="38" y="171.0" text-anchor="end">100</text><line class="chart-grid" x1="44" x2="630" y1="122.0" y2="122.0"/><text class="bp-text-muted" x="38" y="125.0" text-anchor="end">200</text><line class="chart-grid" x1="44" x2="630" y1="76.0" y2="76.0"/><text class="bp-text-muted" x="38" y="79.0" text-anchor="end">300</text><line class="chart-grid" x1="44" x2="630" y1="30.0" y2="30.0"/><text class="bp-text-muted" x="38" y="33.0" text-anchor="end">400</text><rect class="bar-avail" x="46.0" y="210.3" width="11.7" height="3.7" rx="2"/><rect class="hit" x="44.0" y="30" width="29.3" height="184" tabindex="0" data-tip="04:00, off tariff: 8 window min available, 0 min scheduled" aria-label="04:00, off tariff: 8 window min available, 0 min scheduled"/><text class="bp-text-muted" x="58.6" y="228" text-anchor="middle">04:00</text><rect class="bar-avail" x="75.3" y="208.5" width="11.7" height="5.5" rx="2"/><rect class="hit" x="73.3" y="30" width="29.3" height="184" tabindex="0" data-tip="05:00, off tariff: 12 window min available, 0 min scheduled" aria-label="05:00, off tariff: 12 window min available, 0 min scheduled"/><rect class="bar-avail" x="104.6" y="200.2" width="11.7" height="13.8" rx="2"/><rect class="hit" x="102.6" y="30" width="29.3" height="184" tabindex="0" data-tip="06:00, flat tariff: 30 window min available, 0 min scheduled" aria-label="06:00, flat tariff: 30 window min available, 0 min scheduled"/><text class="bp-text-muted" x="117.2" y="228" text-anchor="middle">06:00</text><rect class="bar-avail" x="133.9" y="143.2" width="11.7" height="70.8" rx="2"/><rect class="bar-sched" x="147.6" y="212.6" width="11.7" height="1.4" rx="2"/><rect class="hit" x="131.9" y="30" width="29.3" height="184" tabindex="0" data-tip="07:00, flat tariff: 154 window min available, 3 min scheduled" aria-label="07:00, flat tariff: 154 window min available, 3 min scheduled"/><rect class="bar-avail" x="163.2" y="91.2" width="11.7" height="122.8" rx="2"/><rect class="hit" x="161.2" y="30" width="29.3" height="184" tabindex="0" data-tip="08:00, peak tariff: 267 window min available, 0 min scheduled" aria-label="08:00, peak tariff: 267 window min available, 0 min scheduled"/><text class="bp-text-muted" x="175.8" y="228" text-anchor="middle">08:00</text><rect class="bar-avail" x="192.5" y="88.4" width="11.7" height="125.6" rx="2"/><rect class="hit" x="190.5" y="30" width="29.3" height="184" tabindex="0" data-tip="09:00, peak tariff: 273 window min available, 0 min scheduled" aria-label="09:00, peak tariff: 273 window min available, 0 min scheduled"/><rect class="bar-avail" x="221.8" y="76.9" width="11.7" height="137.1" rx="2"/><rect class="hit" x="219.8" y="30" width="29.3" height="184" tabindex="0" data-tip="10:00, peak tariff: 298 window min available, 0 min scheduled" aria-label="10:00, peak tariff: 298 window min available, 0 min scheduled"/><text class="bp-text-muted" x="234.5" y="228" text-anchor="middle">10:00</text><rect class="bar-avail" x="251.1" y="95.8" width="11.7" height="118.2" rx="2"/><rect class="bar-sched" x="264.8" y="208.5" width="11.7" height="5.5" rx="2"/><rect class="hit" x="249.1" y="30" width="29.3" height="184" tabindex="0" data-tip="11:00, flat tariff: 257 window min available, 12 min scheduled" aria-label="11:00, flat tariff: 257 window min available, 12 min scheduled"/><rect class="bar-avail" x="280.4" y="74.2" width="11.7" height="139.8" rx="2"/><rect class="bar-sched" x="294.0" y="198.8" width="11.7" height="15.2" rx="2"/><rect class="hit" x="278.4" y="30" width="29.3" height="184" tabindex="0" data-tip="12:00, flat tariff: 304 window min available, 33 min scheduled" aria-label="12:00, flat tariff: 304 window min available, 33 min scheduled"/><text class="bp-text-muted" x="293.0" y="228" text-anchor="middle">12:00</text><rect class="bar-avail" x="309.7" y="105.0" width="11.7" height="109.0" rx="2"/><rect class="bar-sched" x="323.3" y="204.3" width="11.7" height="9.7" rx="2"/><rect class="hit" x="307.7" y="30" width="29.3" height="184" tabindex="0" data-tip="13:00, flat tariff: 237 window min available, 21 min scheduled" aria-label="13:00, flat tariff: 237 window min available, 21 min scheduled"/><rect class="bar-avail" x="339.0" y="99.5" width="11.7" height="114.5" rx="2"/><rect class="bar-sched" x="352.6" y="203.0" width="11.7" height="11.0" rx="2"/><rect class="hit" x="337.0" y="30" width="29.3" height="184" tabindex="0" data-tip="14:00, flat tariff: 249 window min available, 24 min scheduled" aria-label="14:00, flat tariff: 249 window min available, 24 min scheduled"/><text class="bp-text-muted" x="351.6" y="228" text-anchor="middle">14:00</text><rect class="bar-avail" x="368.3" y="80.6" width="11.7" height="133.4" rx="2"/><rect class="bar-sched" x="381.9" y="203.0" width="11.7" height="11.0" rx="2"/><rect class="hit" x="366.3" y="30" width="29.3" height="184" tabindex="0" data-tip="15:00, flat tariff: 290 window min available, 24 min scheduled" aria-label="15:00, flat tariff: 290 window min available, 24 min scheduled"/><rect class="bar-avail" x="397.6" y="84.7" width="11.7" height="129.3" rx="2"/><rect class="bar-sched" x="411.2" y="200.2" width="11.7" height="13.8" rx="2"/><rect class="hit" x="395.6" y="30" width="29.3" height="184" tabindex="0" data-tip="16:00, flat tariff: 281 window min available, 30 min scheduled" aria-label="16:00, flat tariff: 281 window min available, 30 min scheduled"/><text class="bp-text-muted" x="410.2" y="228" text-anchor="middle">16:00</text><rect class="bar-avail" x="426.9" y="101.8" width="11.7" height="112.2" rx="2"/><rect class="bar-sched" x="440.6" y="208.5" width="11.7" height="5.5" rx="2"/><rect class="hit" x="424.9" y="30" width="29.3" height="184" tabindex="0" data-tip="17:00, flat tariff: 244 window min available, 12 min scheduled" aria-label="17:00, flat tariff: 244 window min available, 12 min scheduled"/><rect class="bar-avail" x="456.2" y="116.0" width="11.7" height="98.0" rx="2"/><rect class="bar-sched" x="469.8" y="212.6" width="11.7" height="1.4" rx="2"/><rect class="hit" x="454.2" y="30" width="29.3" height="184" tabindex="0" data-tip="18:00, peak tariff: 213 window min available, 3 min scheduled" aria-label="18:00, peak tariff: 213 window min available, 3 min scheduled"/><text class="bp-text-muted" x="468.8" y="228" text-anchor="middle">18:00</text><rect class="bar-avail" x="485.5" y="141.3" width="11.7" height="72.7" rx="2"/><rect class="hit" x="483.5" y="30" width="29.3" height="184" tabindex="0" data-tip="19:00, peak tariff: 158 window min available, 0 min scheduled" aria-label="19:00, peak tariff: 158 window min available, 0 min scheduled"/><rect class="bar-avail" x="514.8" y="177.7" width="11.7" height="36.3" rx="2"/><rect class="hit" x="512.8" y="30" width="29.3" height="184" tabindex="0" data-tip="20:00, peak tariff: 79 window min available, 0 min scheduled" aria-label="20:00, peak tariff: 79 window min available, 0 min scheduled"/><text class="bp-text-muted" x="527.4" y="228" text-anchor="middle">20:00</text><rect class="bar-avail" x="544.1" y="202.0" width="11.7" height="12.0" rx="2"/><rect class="bar-sched" x="557.8" y="211.2" width="11.7" height="2.8" rx="2"/><rect class="hit" x="542.1" y="30" width="29.3" height="184" tabindex="0" data-tip="21:00, off tariff: 26 window min available, 6 min scheduled" aria-label="21:00, off tariff: 26 window min available, 6 min scheduled"/><rect class="bar-avail" x="573.4" y="197.9" width="11.7" height="16.1" rx="2"/><rect class="hit" x="571.4" y="30" width="29.3" height="184" tabindex="0" data-tip="22:00, off tariff: 35 window min available, 0 min scheduled" aria-label="22:00, off tariff: 35 window min available, 0 min scheduled"/><text class="bp-text-muted" x="586.0" y="228" text-anchor="middle">22:00</text><rect class="bar-avail" x="602.7" y="203.9" width="11.7" height="10.1" rx="2"/><rect class="hit" x="600.7" y="30" width="29.3" height="184" tabindex="0" data-tip="23:00, off tariff: 22 window min available, 0 min scheduled" aria-label="23:00, off tariff: 22 window min available, 0 min scheduled"/><line class="bp-line" x1="44" x2="630" y1="214" y2="214"/><text class="bp-text-muted" x="44" y="22" text-anchor="end">min</text></svg>
+    </div>
+    <details class="data-view">
+      <summary>Show hourly data</summary>
+      <div class="table-wrap"><table><thead><tr><th>Hour</th><th>Tariff</th><th>Available min</th><th>Scheduled min</th></tr></thead><tbody><tr><td>04:00</td><td>off</td><td>8</td><td>0</td></tr><tr><td>05:00</td><td>off</td><td>12</td><td>0</td></tr><tr><td>06:00</td><td>flat</td><td>30</td><td>0</td></tr><tr><td>07:00</td><td>flat</td><td>154</td><td>3</td></tr><tr><td>08:00</td><td>peak</td><td>267</td><td>0</td></tr><tr><td>09:00</td><td>peak</td><td>273</td><td>0</td></tr><tr><td>10:00</td><td>peak</td><td>298</td><td>0</td></tr><tr><td>11:00</td><td>flat</td><td>257</td><td>12</td></tr><tr><td>12:00</td><td>flat</td><td>304</td><td>33</td></tr><tr><td>13:00</td><td>flat</td><td>237</td><td>21</td></tr><tr><td>14:00</td><td>flat</td><td>249</td><td>24</td></tr><tr><td>15:00</td><td>flat</td><td>290</td><td>24</td></tr><tr><td>16:00</td><td>flat</td><td>281</td><td>30</td></tr><tr><td>17:00</td><td>flat</td><td>244</td><td>12</td></tr><tr><td>18:00</td><td>peak</td><td>213</td><td>3</td></tr><tr><td>19:00</td><td>peak</td><td>158</td><td>0</td></tr><tr><td>20:00</td><td>peak</td><td>79</td><td>0</td></tr><tr><td>21:00</td><td>off</td><td>26</td><td>6</td></tr><tr><td>22:00</td><td>off</td><td>35</td><td>0</td></tr><tr><td>23:00</td><td>off</td><td>22</td><td>0</td></tr></tbody></table></div>
+    </details>
+
+    <h4 class="chart-title">Solve time grows about linearly with fleet size</h4>
+    <p class="chart-sub">About 17 ms per bus across the range. Test files were expanded versions of the 41-bus TCAT dataset, so this measures software scale, not a real 2,050-bus operation.</p>
+    <div class="diagram-frame chart-frame">
+      <svg viewBox="0 0 640 204" role="img" aria-label="Time to return results rises nearly linearly with fleet size, from 0.7 seconds for 41 buses to 34.3 seconds for 2,050 buses."><line class="chart-grid" x1="44" x2="620" y1="170.0" y2="170.0"/><text class="bp-text-muted" x="38" y="173.0" text-anchor="end">0s</text><line class="chart-grid" x1="44" x2="620" y1="131.5" y2="131.5"/><text class="bp-text-muted" x="38" y="134.5" text-anchor="end">10s</text><line class="chart-grid" x1="44" x2="620" y1="93.0" y2="93.0"/><text class="bp-text-muted" x="38" y="96.0" text-anchor="end">20s</text><line class="chart-grid" x1="44" x2="620" y1="54.5" y2="54.5"/><text class="bp-text-muted" x="38" y="57.5" text-anchor="end">30s</text><line class="chart-grid" x1="44" x2="620" y1="16.0" y2="16.0"/><text class="bp-text-muted" x="38" y="19.0" text-anchor="end">40s</text><text class="bp-text-muted" x="44.0" y="184" text-anchor="middle">0</text><text class="bp-text-muted" x="181.1" y="184" text-anchor="middle">500</text><text class="bp-text-muted" x="318.3" y="184" text-anchor="middle">1,000</text><text class="bp-text-muted" x="455.4" y="184" text-anchor="middle">1,500</text><text class="bp-text-muted" x="592.6" y="184" text-anchor="middle">2,000</text><text class="bp-text-muted" x="620" y="198" text-anchor="end">buses in input file</text><line class="bp-line" x1="44" x2="620" y1="170" y2="170"/><polyline class="chart-line" points="55.2,167.3 66.5,167.1 77.7,164.1 89.0,158.8 100.2,157.5 111.5,154.5 122.7,151.9 134.0,149.6 145.2,144.0 156.5,144.9 268.9,120.4 606.3,37.8"/><circle class="chart-dot" cx="55.2" cy="167.3" r="4"/><circle class="hit" cx="55.2" cy="167.3" r="11" tabindex="0" data-tip="41 buses: 0.70 s" aria-label="41 buses: 0.70 s"/><circle class="chart-dot" cx="66.5" cy="167.1" r="4"/><circle class="hit" cx="66.5" cy="167.1" r="11" tabindex="0" data-tip="82 buses: 0.75 s" aria-label="82 buses: 0.75 s"/><circle class="chart-dot" cx="77.7" cy="164.1" r="4"/><circle class="hit" cx="77.7" cy="164.1" r="11" tabindex="0" data-tip="123 buses: 1.52 s" aria-label="123 buses: 1.52 s"/><circle class="chart-dot" cx="89.0" cy="158.8" r="4"/><circle class="hit" cx="89.0" cy="158.8" r="11" tabindex="0" data-tip="164 buses: 2.91 s" aria-label="164 buses: 2.91 s"/><circle class="chart-dot" cx="100.2" cy="157.5" r="4"/><circle class="hit" cx="100.2" cy="157.5" r="11" tabindex="0" data-tip="205 buses: 3.25 s" aria-label="205 buses: 3.25 s"/><circle class="chart-dot" cx="111.5" cy="154.5" r="4"/><circle class="hit" cx="111.5" cy="154.5" r="11" tabindex="0" data-tip="246 buses: 4.03 s" aria-label="246 buses: 4.03 s"/><circle class="chart-dot" cx="122.7" cy="151.9" r="4"/><circle class="hit" cx="122.7" cy="151.9" r="11" tabindex="0" data-tip="287 buses: 4.70 s" aria-label="287 buses: 4.70 s"/><circle class="chart-dot" cx="134.0" cy="149.6" r="4"/><circle class="hit" cx="134.0" cy="149.6" r="11" tabindex="0" data-tip="328 buses: 5.29 s" aria-label="328 buses: 5.29 s"/><circle class="chart-dot" cx="145.2" cy="144.0" r="4"/><circle class="hit" cx="145.2" cy="144.0" r="11" tabindex="0" data-tip="369 buses: 6.76 s" aria-label="369 buses: 6.76 s"/><circle class="chart-dot" cx="156.5" cy="144.9" r="4"/><circle class="hit" cx="156.5" cy="144.9" r="11" tabindex="0" data-tip="410 buses: 6.53 s" aria-label="410 buses: 6.53 s"/><circle class="chart-dot" cx="268.9" cy="120.4" r="4"/><circle class="hit" cx="268.9" cy="120.4" r="11" tabindex="0" data-tip="820 buses: 12.89 s" aria-label="820 buses: 12.89 s"/><circle class="chart-dot" cx="606.3" cy="37.8" r="4"/><circle class="hit" cx="606.3" cy="37.8" r="11" tabindex="0" data-tip="2,050 buses: 34.34 s" aria-label="2,050 buses: 34.34 s"/><text class="bp-text" x="600.3" y="27.8" text-anchor="end">2,050 buses, 34.3 s</text><text class="bp-text" x="278.9" y="134.4">820 buses, 12.9 s</text></svg>
+    </div>
+    <details class="data-view">
+      <summary>Show test data</summary>
+      <div class="table-wrap"><table><thead><tr><th>Buses</th><th>Time</th></tr></thead><tbody><tr><td>41</td><td>0.70 s</td></tr><tr><td>82</td><td>0.75 s</td></tr><tr><td>123</td><td>1.52 s</td></tr><tr><td>164</td><td>2.91 s</td></tr><tr><td>205</td><td>3.25 s</td></tr><tr><td>246</td><td>4.03 s</td></tr><tr><td>287</td><td>4.70 s</td></tr><tr><td>328</td><td>5.29 s</td></tr><tr><td>369</td><td>6.76 s</td></tr><tr><td>410</td><td>6.53 s</td></tr><tr><td>820</td><td>12.89 s</td></tr><tr><td>2,050</td><td>34.34 s</td></tr></tbody></table></div>
+    </details>
+
+    <figure class="shot-fig board-fig">
+      <img src="shots/ebus-tcat-board.jpg" alt="TCAT social media post with photos of Thomas Wu presenting the charging platform at a TCAT Board meeting. The caption describes the collaboration with a Cornell Master of Engineering research team." width="800" height="1000" loading="lazy">
+      <figcaption>TCAT's own post about our presentation to its Board. Image: TCAT on Facebook.</figcaption>
+    </figure>
+
+    <p class="stage-line">The board presentation led to an approved pilot program. <strong>Stage: approved pilot, not yet in full operational deployment.</strong></p>
+
+    <div class="block-title">What It Doesn't Do Yet</div>
+    <ul class="plain">
+      <li><span class="label">No measured savings.</span> Tariffs in the model are fixed test values (0.10, 0.20, and 0.50 per kWh), and there is no before-and-after cost comparison, so I report schedule behavior here and no dollar figures.</li>
+      <li><span class="label">No overnight charging.</span> The model has no end-of-day battery target, and 13 of 41 buses reach their last charging window of the day below 25%. A real plan has to include the depot recharge.</li>
+      <li><span class="label">No real demand charges.</span> Capacity carries a flat weight, while actual utility bills turn on the single highest peak. BC Transit's six 180 kW chargers could draw 1,080 kW together. At NYSEG's published $14.77 to $18.11 per kW, that one peak could cost roughly $16,000 to $19,600 a month before rebates. This is the next model change I would make.</li>
+      <li><span class="label">No live data.</span> Schedules are planned ahead from a file. Rescheduling around delays or breakdowns would need live bus location and battery feeds.</li>
+    </ul>
+
+    <div class="block-title">Stack</div>
+    <div class="tagrow">
+      <span class="tag">React</span>
+      <span class="tag">Django REST Framework</span>
+      <span class="tag">PostgreSQL</span>
+      <span class="tag">Gurobi (MILP)</span>
+      <span class="tag">Python / pandas</span>
+      <span class="tag">Leaflet</span>
+      <span class="tag">GTFS</span>
+    </div>
+  </div>
+</section>
+</details>
+
+<section class="sheet" id="side-projects">
+  <span class="tick-bl"></span><span class="tick-br"></span>
+  <div class="sheet-head">
+    <h2>Side Projects</h2>
+    <span class="sheet-no mono">SHEET 04 — ALSO BUILT</span>
+  </div>
+  <p class="project-sub">Solo builds, end to end — full source on GitHub.</p>
+
+  <div class="projgrid">
+    <div class="projcard">
+      <span class="pkicker">01 / WEB SCRAPING</span>
+      <h4>Nordstrom Rack Crawler</h4>
+      <p class="pdesc">Scrapes trending women's clothing across 11 categories by calling the site's internal recommendation API directly, driven over Chrome DevTools Protocol to avoid the fingerprinting that trips up headless-browser scrapers. Proxy rotation, incremental auto-save, and bulk image export straight into per-category Excel workbooks.</p>
+      <div class="pshots">
+        <img src="shots/nordstrom-dashboard.webp" alt="Ranked blazer products with live viewing-count popularity signal, pulled from Nordstrom Rack's internal recommendation API" width="1800" height="1037" loading="lazy">
+        <span class="pshot-cap">Output dashboard — ranked by live viewing count</span>
+        <img src="shots/nordstrom-sheet.webp" alt="Exported Excel workbook of scraped product data with price, sizes, viewing count, and source URLs" width="1800" height="877" loading="lazy">
+        <span class="pshot-cap">Per-category Excel export — full product record</span>
+      </div>
+      <div class="tagrow">
+        <span class="tag">Python</span><span class="tag">CDP</span><span class="tag">Proxy rotation</span><span class="tag">Excel export</span>
+      </div>
+      <div class="plinks"><a href="https://github.com/Thomaswu32/nordstromrack-crawler" target="_blank" rel="noopener">Repository ↗</a></div>
+    </div>
+
+    <div class="projcard">
+      <span class="pkicker">02 / MULTI-AGENT AI</span>
+      <h4>CareerInk</h4>
+      <p class="pdesc">An AI career-matching platform built on two LangGraph agents over GPT-4o: one parses a CV and a 48-question Big Five / RIASEC assessment into a structured profile, the other weighs it against 50 IT career roles (skills 40% · personality 25% · work style 20% · experience 15%) and writes a personalised PDF report.</p>
+      <div class="tagrow">
+        <span class="tag">Python</span><span class="tag">TypeScript</span><span class="tag">LangGraph</span><span class="tag">GPT-4o</span>
+      </div>
+      <div class="plinks">
+        <a href="https://github.com/Thomaswu32/Career_ink" target="_blank" rel="noopener">Repository ↗</a>
+      </div>
+    </div>
+
+    <div class="projcard">
+      <span class="pkicker">03 / COMPUTER VISION</span>
+      <h4>TrendScope</h4>
+      <p class="pdesc">A fashion-trend pipeline that ingests monthly product photos, segments garments with SCHP human parsing, classifies color / category / style zero-shot with CLIP and FashionCLIP, then computes year-over-year and month-over-month trend shifts — surfaced through a Flask dashboard.</p>
+      <div class="pshots">
+        <img src="shots/trendscope-report.webp" alt="TrendScope dashboard with multi-month sample selection and Google Images / Instagram / Pinterest / TikTok data-source toggles" width="1800" height="1019" loading="lazy">
+        <span class="pshot-cap">Report UI — month range + source selection</span>
+      </div>
+      <div class="tagrow">
+        <span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">CLIP</span><span class="tag">Flask</span>
+      </div>
+      <div class="plinks"><a href="https://github.com/Thomaswu32/Trendscope_analysis" target="_blank" rel="noopener">Repository ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" id="skills">
+  <span class="tick-bl"></span><span class="tick-br"></span>
+  <div class="sheet-head">
+    <h2>Skills</h2>
+    <span class="sheet-no mono">SHEET 05 — LEGEND</span>
+  </div>
+  <div class="skill-groups">
+    <div class="skill-group">
+      <div class="block-title">Languages</div>
+      <div class="tagrow">
+        <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">TypeScript</span><span class="tag">R</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="block-title">Data engineering</div>
+      <div class="tagrow">
+        <span class="tag">PostgreSQL</span><span class="tag">pgvector</span><span class="tag">Snowflake</span><span class="tag">AWS (S3, Redshift)</span><span class="tag">dbt tests</span><span class="tag">ETL pipelines</span><span class="tag">pandas / NumPy</span><span class="tag">Playwright / Selenium</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="block-title">Backend &amp; apps</div>
+      <div class="tagrow">
+        <span class="tag">FastAPI</span><span class="tag">Django REST Framework</span><span class="tag">Flask</span><span class="tag">REST API design</span><span class="tag">React</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="block-title">AI / LLM</div>
+      <div class="tagrow">
+        <span class="tag">LangGraph</span><span class="tag">GPT-4o</span><span class="tag">RAG / retrieval grounding</span><span class="tag">Multi-agent systems</span><span class="tag">Evaluation &amp; metrics</span><span class="tag">Human-in-the-loop systems</span><span class="tag">PyTorch</span><span class="tag">CLIP</span><span class="tag">Prompt &amp; persona design</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="block-title">Infrastructure &amp; governance</div>
+      <div class="tagrow">
+        <span class="tag">Docker</span><span class="tag">Terraform</span><span class="tag">Azure</span><span class="tag">Git</span><span class="tag">Linux</span><span class="tag">CI/CD</span><span class="tag">Access control</span><span class="tag">Data governance</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" id="contact">
+  <span class="tick-bl"></span><span class="tick-br"></span>
+  <div class="sheet-head">
+    <h2>Contact</h2>
+    <span class="sheet-no mono">SHEET 06 — INDEX</span>
+  </div>
+
+  <div class="contact-row">
+    <div>
+      <span class="k">Email</span>
+      <span class="v" id="email-val"><a href="mailto:cw2228@cornell.edu">cw2228@cornell.edu</a></span>
+    </div>
+    <button class="copybtn" id="copy-email" type="button">Copy</button>
+  </div>
+  <div class="contact-row">
+    <div>
+      <span class="k">GitHub</span>
+      <span class="v"><a href="https://github.com/Thomaswu32?tab=repositories" target="_blank" rel="noopener">github.com/Thomaswu32</a></span>
+    </div>
+  </div>
+  <div class="contact-row">
+    <div>
+      <span class="k">LinkedIn</span>
+      <span class="v"><a href="https://www.linkedin.com/in/chenghaothomaswu/" target="_blank" rel="noopener">linkedin.com/in/chenghaothomaswu</a></span>
+    </div>
+  </div>
+</section>
+
+<footer>DRAWN BY T. WU</footer>
+
+<script>
+(function(){
+  if(!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var cards = document.querySelectorAll('.projgrid .projcard');
+  cards.forEach(function(card){
+    var siblings = Array.prototype.slice.call(card.parentElement.children);
+    var index = siblings.indexOf(card);
+    card.style.setProperty('--reveal-delay', Math.min(index, 2) * 100 + 'ms');
+    card.classList.add('is-reveal-pending');
+  });
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, {threshold:.14, rootMargin:'0px 0px -6%'});
+  cards.forEach(function(card){ observer.observe(card); });
+})();
+</script>
+<script>
+(function(){
+  var btn = document.getElementById('copy-email');
+  var val = document.getElementById('email-val');
+  if(!btn || !val) return;
+  btn.addEventListener('click', function(){
+    var text = val.textContent.trim();
+    function done(){
+      btn.textContent = 'Copied';
+      btn.dataset.done = '1';
+      setTimeout(function(){ btn.textContent = 'Copy'; btn.dataset.done = ''; }, 1600);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){
+        var r = document.createRange(); r.selectNodeContents(val);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      });
+    } else {
+      var r = document.createRange(); r.selectNodeContents(val);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+  });
+})();
+</script>
+<script>
+(function(){
+  var caseDetails = document.getElementById('case-studies-full');
+  var caseIds = ['otsuka', 'grading', 'ebus'];
+  function openCaseFromHash(){
+    var id = window.location.hash.slice(1);
+    if(caseDetails && caseIds.indexOf(id) !== -1) caseDetails.open = true;
+  }
+  document.querySelectorAll('a[href="#otsuka"],a[href="#grading"],a[href="#ebus"]').forEach(function(link){
+    link.addEventListener('click', function(){ if(caseDetails) caseDetails.open = true; });
+  });
+  openCaseFromHash();
+  window.addEventListener('hashchange', openCaseFromHash);
+})();
+</script>
+<script>
+(function(){
+  var tip = document.createElement('div');
+  tip.id = 'chart-tip'; tip.hidden = true; document.body.appendChild(tip);
+  function place(x, y){
+    var w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(x + 12, window.innerWidth - w - 8)) + 'px';
+    tip.style.top = Math.max(8, y - h - 10) + 'px';
+  }
+  document.querySelectorAll('.hit').forEach(function(el){
+    el.addEventListener('pointerenter', function(e){ tip.textContent = el.dataset.tip; tip.hidden = false; place(e.clientX, e.clientY); });
+    el.addEventListener('pointermove', function(e){ place(e.clientX, e.clientY); });
+    el.addEventListener('pointerleave', function(){ tip.hidden = true; });
+    el.addEventListener('focus', function(){ var r = el.getBoundingClientRect(); tip.textContent = el.dataset.tip; tip.hidden = false; place(r.left, r.top); });
+    el.addEventListener('blur', function(){ tip.hidden = true; });
+  });
+})();
+</script>
+</body>
+</html>
